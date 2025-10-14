@@ -67,7 +67,10 @@ async function fillSingleField(fieldName, button) {
     } else if (fieldName === 'katakanaLastName' && formData.katakanaFullName) {
       value = splitKatakana(formData.katakanaFullName)[0];
     } else if (fieldName === 'katakanaFirstName' && formData.katakanaFullName) {
-      value = splitKatakana(formData.katakanaFullName)[1];
+      value = splitKatakana(formData.katakanaFullName)[1];    } else if (fieldName === 'kanaLastName' && formData.kanaFullName) {
+      value = splitKana(formData.kanaFullName)[0];
+    } else if (fieldName === 'kanaFirstName' && formData.kanaFullName) {
+      value = splitKana(formData.kanaFullName)[1];
     } else if (fieldName === 'emailConfirm') {
       value = formData.email;
     }
@@ -157,5 +160,27 @@ function splitKatakana(fullKatakana) {
     return [fullKatakana.substr(0, 1), fullKatakana.substr(1)];
   }
   return [fullKatakana, ''];
+}
+
+// ふりがな分割
+function splitKana(fullKana) {
+  if (!fullKana) return ['', ''];
+  
+  if (fullKana.includes(' ') || fullKana.includes('　')) {
+    const parts = fullKana.split(/[\s　]+/);
+    return [parts[0] || '', parts[1] || ''];
+  }
+  
+  if (fullKana.length >= 4) {
+    const threeCharSurnames = ['さとう', 'たなか', 'わたなべ', 'やまもと', 'なかむら'];
+    const firstThree = fullKana.substr(0, 3);
+    if (threeCharSurnames.includes(firstThree)) {
+      return [firstThree, fullKana.substr(3)];
+    }
+    return [fullKana.substr(0, 2), fullKana.substr(2)];
+  } else if (fullKana.length === 2) {
+    return [fullKana.substr(0, 1), fullKana.substr(1)];
+  }
+  return [fullKana, ''];
 }
 

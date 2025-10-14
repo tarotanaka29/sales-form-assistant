@@ -40,32 +40,51 @@ class FormAutoFiller {
     }
   }
   
-  // 個別フィールドタイプによる入力
+// 個別フィールドタイプによる入力
   async fillSingleFieldByType(fieldName, value) {
     try {
       const fields = FieldDetector.getAllInputFields();
       let filled = false;
+      let filledCount = 0;
+      
+      console.log(`Attempting to fill field: ${fieldName} with value: ${value}`);
       
       // フィールドタイプに一致するフィールドを探す
       fields.forEach(field => {
         const detectedType = FieldDetector.detectFieldType(field);
         
+        console.log(`Field detected as: ${detectedType}, looking for: ${fieldName}`);
+        
         if (detectedType === fieldName) {
+          // 値を設定
           field.value = value;
           field.focus();
           
-          // イベントをトリガー
+          // React/Vue等のフレームワーク対応
+          const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+            window.HTMLInputElement.prototype,
+            'value'
+          ).set;
+          nativeInputValueSetter.call(field, value);
+          
+          // 各種イベントをトリガー
           field.dispatchEvent(new Event('input', { bubbles: true }));
           field.dispatchEvent(new Event('change', { bubbles: true }));
           field.dispatchEvent(new Event('blur', { bubbles: true }));
+          field.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true }));
+          field.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true }));
           
           filled = true;
+          filledCount++;
+          
+          console.log(`Successfully filled field: ${field.name || field.id}`);
         }
       });
       
       if (filled) {
-        this.showNotification(`「${fieldName}」を入力しました`, 'success');
+        this.showNotification(`「${fieldName}」を${filledCount}個のフィールドに入力しました`, 'success');
       } else {
+        console.warn(`No field found for: ${fieldName}`);
         this.showNotification(`「${fieldName}」フィールドが見つかりません`, 'warning');
       }
       
