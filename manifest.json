@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "営業フォーム自動入力アシスタント",
-  "version": "1.0.0",
+  "version": "2.1.0",
   "description": "営業代行業務のための問い合わせフォーム自動入力ツール",
   
   "permissions": [
