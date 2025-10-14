@@ -122,9 +122,11 @@ async function loadFormData() {
     }
   });
   
-  // 文字数カウンターを更新
-  updateCharacterCounter('message300', 300);
-  updateCharacterCounter('message800', 800);
+  // 文字数カウンターを更新（データ読み込み後）
+  setTimeout(() => {
+    updateCharacterCounter('message300', 300);
+    updateCharacterCounter('message800', 800);
+  }, 100);
 }
 
 // フォームデータを保存
@@ -178,9 +180,15 @@ async function saveFormData() {
 function setupCharacterCounter(fieldId, maxLength) {
   const field = document.getElementById(fieldId);
   if (field) {
+    // 初期表示時にカウントを更新
+    updateCharacterCounter(fieldId, maxLength);
+    
+    // 入力時にカウントを更新
     field.addEventListener('input', () => {
       updateCharacterCounter(fieldId, maxLength);
     });
+  } else {
+    console.warn(`Field not found: ${fieldId}`);
   }
 }
 
