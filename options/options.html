@@ -12,14 +12,20 @@
       <p class="subtitle">BtoB営業代行業務向けツール</p>
     </header>
     
-    <!-- 設定切り替えタブ -->
-    <div class="setting-tabs">
-      <button class="tab-btn active" data-setting="1">📋 設定1</button>
-      <button class="tab-btn" data-setting="2">📋 設定2</button>
+    <!-- プロファイル切り替えタブ -->
+    <div class="profile-tabs">
+      <div class="profile-tab active" data-profile="1">
+        <button class="tab-btn">📋 <span class="profile-name" id="profile-name-1">プロファイル1</span></button>
+        <button class="edit-name-btn" data-profile="1" title="名前を編集">✏️</button>
+      </div>
+      <div class="profile-tab" data-profile="2">
+        <button class="tab-btn">📋 <span class="profile-name" id="profile-name-2">プロファイル2</span></button>
+        <button class="edit-name-btn" data-profile="2" title="名前を編集">✏️</button>
+      </div>
     </div>
     
-    <div class="current-setting-info">
-      現在の設定: <span id="current-setting-label">設定1</span>
+    <div class="current-profile-info">
+      現在のプロファイル: <span id="current-profile-label">プロファイル1</span>
     </div>
 
     <form id="settings-form">

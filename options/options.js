@@ -1,25 +1,55 @@
-// シンプルな2設定管理
+// 2つのプロファイル管理
 document.addEventListener('DOMContentLoaded', async () => {
-  // 現在の設定を読み込み
+  // 現在のプロファイルを読み込み
   await loadFormData();
   
+  // プロファイル名を読み込み
+  await loadProfileNames();
+  
   // タブ切り替えイベント
-  document.querySelectorAll('.tab-btn').forEach(btn => {
+  document.querySelectorAll('.profile-tab').forEach(tab => {
+    const tabBtn = tab.querySelector('.tab-btn');
+    if (tabBtn) {
+      tabBtn.addEventListener('click', async (e) => {
+        const profileNumber = parseInt(tab.getAttribute('data-profile'));
+        
+        // タブのアクティブ状態を切り替え
+        document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        // プロファイルを切り替え
+        await Storage.setCurrentProfile(profileNumber);
+        await loadFormData();
+        
+        // ラベル更新
+        const profileName = await Storage.getProfileName(profileNumber);
+        document.getElementById('current-profile-label').textContent = profileName;
+        
+        showMessage(`${profileName}に切り替えました`, 'success');
+      });
+    }
+  });
+  
+  // プロファイル名編集ボタン
+  document.querySelectorAll('.edit-name-btn').forEach(btn => {
     btn.addEventListener('click', async (e) => {
-      const settingNumber = parseInt(e.target.getAttribute('data-setting'));
+      e.stopPropagation();
+      const profileNumber = parseInt(btn.getAttribute('data-profile'));
+      const currentName = await Storage.getProfileName(profileNumber);
       
-      // タブのアクティブ状態を切り替え
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      e.target.classList.add('active');
-      
-      // 設定を切り替え
-      await Storage.setCurrentSetting(settingNumber);
-      await loadFormData();
-      
-      // ラベル更新
-      document.getElementById('current-setting-label').textContent = `設定${settingNumber}`;
-      
-      showMessage(`設定${settingNumber}に切り替えました`, 'success');
+      const newName = prompt(`プロファイル${profileNumber}の名前を入力してください:`, currentName);
+      if (newName && newName.trim()) {
+        await Storage.setProfileName(profileNumber, newName.trim());
+        document.getElementById(`profile-name-${profileNumber}`).textContent = newName.trim();
+        
+        // 現在のプロファイルの場合はラベルも更新
+        const currentProfile = await Storage.getCurrentProfile();
+        if (currentProfile === profileNumber) {
+          document.getElementById('current-profile-label').textContent = newName.trim();
+        }
+        
+        showMessage('プロファイル名を変更しました', 'success');
+      }
     });
   });
   
@@ -31,11 +61,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   // リセットボタン
   document.getElementById('reset-btn').addEventListener('click', async () => {
-    const currentSetting = await Storage.getCurrentSetting();
-    if (confirm(`設定${currentSetting}をリセットしますか?`)) {
+    const currentProfile = await Storage.getCurrentProfile();
+    const profileName = await Storage.getProfileName(currentProfile);
+    if (confirm(`${profileName}をリセットしますか?`)) {
       await Storage.reset();
       await loadFormData();
-      showMessage('設定をリセットしました', 'success');
+      showMessage(`${profileName}をリセットしました`, 'success');
     }
   });
   
@@ -44,9 +75,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupCharacterCounter('message800', 800);
 });
 
+// プロファイル名を読み込み
+async function loadProfileNames() {
+  for (let i = 1; i <= 2; i++) {
+    const profileName = await Storage.getProfileName(i);
+    const nameElement = document.getElementById(`profile-name-${i}`);
+    if (nameElement) {
+      nameElement.textContent = profileName;
+    }
+  }
+}
+
 // フォームデータの読み込み
 async function loadFormData() {
-  const currentSetting = await Storage.getCurrentSetting();
+  const currentProfile = await Storage.getCurrentProfile();
   const data = await Storage.load();
   
   // フォームの全フィールドに値を設定
@@ -57,16 +99,17 @@ async function loadFormData() {
     }
   });
   
-  // 現在の設定番号を表示
-  document.getElementById('current-setting-label').textContent = `設定${currentSetting}`;
+  // 現在のプロファイル名を表示
+  const profileName = await Storage.getProfileName(currentProfile);
+  document.getElementById('current-profile-label').textContent = profileName;
   
   // タブのアクティブ状態を更新
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    const settingNumber = parseInt(btn.getAttribute('data-setting'));
-    if (settingNumber === currentSetting) {
-      btn.classList.add('active');
+  document.querySelectorAll('.profile-tab').forEach(tab => {
+    const profileNumber = parseInt(tab.getAttribute('data-profile'));
+    if (profileNumber === currentProfile) {
+      tab.classList.add('active');
     } else {
-      btn.classList.remove('active');
+      tab.classList.remove('active');
     }
   });
   
@@ -92,8 +135,9 @@ async function saveFormData() {
   
   await Storage.save(data);
   
-  const currentSetting = await Storage.getCurrentSetting();
-  showMessage(`設定${currentSetting}を保存しました`, 'success');
+  const currentProfile = await Storage.getCurrentProfile();
+  const profileName = await Storage.getProfileName(currentProfile);
+  showMessage(`${profileName}を保存しました`, 'success');
 }
 
 // 文字数カウンターのセットアップ
@@ -123,9 +167,13 @@ function updateCharacterCounter(fieldId, maxLength) {
     
     if (length > maxLength) {
       counter.style.color = '#ef4444';
+      counter.style.fontWeight = '600';
     } else {
       counter.style.color = '#6b7280';
+      counter.style.fontWeight = '500';
     }
+  } else {
+    console.warn(`Counter not found for field: ${fieldId}`);
   }
 }
 

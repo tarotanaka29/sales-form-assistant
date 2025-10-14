@@ -4,16 +4,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 統計情報の読み込み
     loadStats();
     
-    // 現在の設定を読み込み
+    // 現在のプロファイルを読み込み
     await loadCurrentSetting();
     
-    // 設定選択イベント
+    // プロファイル選択イベント
     const settingSelect = document.getElementById('popup-setting-select');
     if (settingSelect) {
       settingSelect.addEventListener('change', async (e) => {
         const settingNumber = parseInt(e.target.value);
         if (settingNumber) {
-          await chrome.storage.local.set({ currentSetting: settingNumber });
+          await chrome.storage.local.set({ currentProfile: settingNumber });
         }
       });
     }
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     }
     
-    // 設定ボタン
+    // プロファイルボタン
     const settingsBtn = document.getElementById('settings-btn');
     if (settingsBtn) {
       settingsBtn.addEventListener('click', () => {
@@ -73,7 +73,7 @@ async function loadStats() {
 // 個別フィールドの入力
 async function fillSingleField(fieldName, button) {
   try {
-    // 設定データを読み込む
+    // プロファイルデータを読み込む
     const result = await chrome.storage.local.get('formData');
     const formData = result.formData || {};
     
@@ -103,7 +103,7 @@ async function fillSingleField(fieldName, button) {
     }
     
     if (!value) {
-      showTemporaryMessage(button, '未設定');
+      showTemporaryMessage(button, '未プロファイル');
       return;
     }
     
@@ -212,7 +212,7 @@ function splitKana(fullKana) {
 }
 
 
-// 現在の設定を読み込み
+// 現在のプロファイルを読み込み
 async function loadCurrentSetting() {
   try {
     const select = document.getElementById('popup-setting-select');
@@ -221,10 +221,10 @@ async function loadCurrentSetting() {
       return;
     }
     
-    const result = await chrome.storage.local.get('currentSetting');
-    const currentSetting = result.currentSetting || 1;
+    const result = await chrome.storage.local.get('currentProfile');
+    const currentProfile = result.currentProfile || 1;
     
-    select.value = currentSetting.toString();
+    select.value = currentProfile.toString();
   } catch (error) {
     console.error('Error loading current setting:', error);
   }
