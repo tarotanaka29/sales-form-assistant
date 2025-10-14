@@ -3,6 +3,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 統計情報の読み込み
   loadStats();
   
+  // プロファイル一覧を読み込み
+  await loadPopupProfileList();
+  
+  // プロファイル選択イベント
+  document.getElementById('popup-profile-select').addEventListener('change', async (e) => {
+    const profileId = e.target.value;
+    if (profileId) {
+      await Storage.setCurrentProfileId(profileId);
+    }
+  });
+  
+
+  
   // 実行ボタン
   document.getElementById('execute-btn').addEventListener('click', async () => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -182,5 +195,25 @@ function splitKana(fullKana) {
     return [fullKana.substr(0, 1), fullKana.substr(1)];
   }
   return [fullKana, ''];
+}
+
+
+// ポップアップ用プロファイル一覧読み込み
+async function loadPopupProfileList() {
+  const profileList = await Storage.getProfileList();
+  const currentProfileId = await Storage.getCurrentProfileId();
+  const select = document.getElementById('popup-profile-select');
+  
+  select.innerHTML = '';
+  
+  profileList.forEach(profile => {
+    const option = document.createElement('option');
+    option.value = profile.id;
+    option.textContent = profile.name;
+    if (profile.id === currentProfileId) {
+      option.selected = true;
+    }
+    select.appendChild(option);
+  });
 }
 

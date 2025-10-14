@@ -1,10 +1,10 @@
 // 設定画面スクリプト
 document.addEventListener('DOMContentLoaded', async () => {
-  // 保存済みデータの読み込み
-  await loadFormData();
+  // プロファイル一覧を読み込み
+  await loadProfileList();
   
-  // 文字数カウンターの初期化
-  setupCharCounters();
+  // 現在のプロファイルのデータを読み込み
+  await loadFormData();
   
   // フォーム送信イベント
   document.getElementById('settings-form').addEventListener('submit', async (e) => {
@@ -12,149 +12,225 @@ document.addEventListener('DOMContentLoaded', async () => {
     await saveFormData();
   });
   
-  // リセットボタン
-  document.getElementById('reset-btn').addEventListener('click', async () => {
-    if (confirm('すべての設定をリセットしますか?')) {
-      await resetFormData();
+  // プロファイル選択イベント
+  document.getElementById('profile-select').addEventListener('change', async (e) => {
+    const profileId = e.target.value;
+    if (profileId) {
+      await Storage.setCurrentProfileId(profileId);
+      await loadFormData();
+      showMessage('プロファイルを切り替えました', 'success');
     }
   });
+  
+  // 新規作成ボタン
+  document.getElementById('new-profile-btn').addEventListener('click', async () => {
+    const name = prompt('新しいプロファイル名を入力してください:', `プロファイル ${await getProfileCount() + 1}`);
+    if (name) {
+      try {
+        const profileId = await Storage.createNewProfile(name);
+        await Storage.setCurrentProfileId(profileId);
+        await loadProfileList();
+        await loadFormData();
+        showMessage(`プロファイル「${name}」を作成しました`, 'success');
+      } catch (error) {
+        showMessage(error.message, 'error');
+      }
+    }
+  });
+  
+  // 名前変更ボタン
+  document.getElementById('rename-profile-btn').addEventListener('click', async () => {
+    const profileId = await Storage.getCurrentProfileId();
+    const profiles = await Storage.getAllProfiles();
+    const currentProfile = profiles[profileId];
+    
+    if (currentProfile) {
+      const newName = prompt('新しいプロファイル名を入力してください:', currentProfile.name);
+      if (newName && newName !== currentProfile.name) {
+        await Storage.renameProfile(profileId, newName);
+        await loadProfileList();
+        showMessage(`プロファイル名を「${newName}」に変更しました`, 'success');
+      }
+    }
+  });
+  
+  // 削除ボタン
+  document.getElementById('delete-profile-btn').addEventListener('click', async () => {
+    const profileId = await Storage.getCurrentProfileId();
+    const profiles = await Storage.getAllProfiles();
+    const currentProfile = profiles[profileId];
+    
+    if (currentProfile) {
+      const profileCount = Object.keys(profiles).length;
+      if (profileCount === 1) {
+        showMessage('最後のプロファイルは削除できません', 'error');
+        return;
+      }
+      
+      if (confirm(`プロファイル「${currentProfile.name}」を削除しますか?`)) {
+        await Storage.deleteProfile(profileId);
+        await loadProfileList();
+        await loadFormData();
+        showMessage(`プロファイル「${currentProfile.name}」を削除しました`, 'success');
+      }
+    }
+  });
+  
+  // 文字数カウンター
+  setupCharacterCounter('message300', 300);
+  setupCharacterCounter('message800', 800);
 });
 
-// 文字数カウンターの設定
-function setupCharCounters() {
-  const message300 = document.getElementById('message300');
-  const message800 = document.getElementById('message800');
-  const count300 = document.getElementById('count-300');
-  const count800 = document.getElementById('count-800');
+// プロファイル一覧を読み込み
+async function loadProfileList() {
+  const profileList = await Storage.getProfileList();
+  const currentProfileId = await Storage.getCurrentProfileId();
+  const select = document.getElementById('profile-select');
   
-  message300.addEventListener('input', () => {
-    const length = message300.value.length;
-    count300.textContent = `${length} / 300文字`;
-    if (length > 300) {
-      count300.style.color = '#f44336';
-    } else {
-      count300.style.color = '#888';
+  select.innerHTML = '';
+  
+  profileList.forEach(profile => {
+    const option = document.createElement('option');
+    option.value = profile.id;
+    option.textContent = profile.name;
+    if (profile.id === currentProfileId) {
+      option.selected = true;
     }
+    select.appendChild(option);
   });
   
-  message800.addEventListener('input', () => {
-    const length = message800.value.length;
-    count800.textContent = `${length} / 800文字`;
-    if (length > 800) {
-      count800.style.color = '#f44336';
-    } else {
-      count800.style.color = '#888';
-    }
-  });
+  // 削除ボタンの有効/無効を切り替え
+  const deleteBtn = document.getElementById('delete-profile-btn');
+  deleteBtn.disabled = profileList.length === 1;
 }
 
-// フォームデータの読み込み
+// プロファイル数を取得
+async function getProfileCount() {
+  const profiles = await Storage.getAllProfiles();
+  return Object.keys(profiles).length;
+}
+
+// フォームデータを読み込み
 async function loadFormData() {
-  const result = await chrome.storage.local.get('formData');
-  const formData = result.formData || {};
+  const data = await Storage.load();
   
   // 各フィールドに値を設定
-  const fields = [
-    'lastName', 'firstName', 'fullName', 'kanaLastName', 'kanaFirstName', 'kanaFullName',
-    'katakanaFullName', 'katakanaLastName', 'katakanaFirstName',
-    'zipcode', 'zipcode1', 'zipcode2', 'fullAddress', 'prefecture',
-    'city', 'street', 'building', 'phone', 'phone1', 'phone2', 'phone3',
-    'fax', 'email', 'companyName', 'companyKana', 'department', 'position', 
-    'url', 'subject', 'message300', 'message800'
-  ];
-  
-  fields.forEach(field => {
-    const element = document.getElementById(field);
-    if (element && formData[field]) {
-      element.value = formData[field];
+  Object.keys(data).forEach(key => {
+    const element = document.getElementById(key);
+    if (element) {
+      element.value = data[key] || '';
     }
   });
   
   // 文字数カウンターを更新
-  updateCharCount('message300', 'count-300', 300);
-  updateCharCount('message800', 'count-800', 800);
+  updateCharacterCounter('message300', 300);
+  updateCharacterCounter('message800', 800);
+}
+
+// フォームデータを保存
+async function saveFormData() {
+  const form = document.getElementById('settings-form');
+  const formData = new FormData(form);
+  const data = {};
+  
+  formData.forEach((value, key) => {
+    data[key] = value;
+  });
+  
+  // 自動分割処理
+  // ふりがな
+  if (data.kanaFullName) {
+    const [lastName, firstName] = AutoSplit.splitKana(data.kanaFullName);
+    data.kanaLastName = lastName;
+    data.kanaFirstName = firstName;
+  }
+  
+  // フリガナ
+  if (data.katakanaFullName) {
+    const [lastName, firstName] = AutoSplit.splitKatakana(data.katakanaFullName);
+    data.katakanaLastName = lastName;
+    data.katakanaFirstName = firstName;
+  }
+  
+  // 郵便番号
+  if (data.zipcode) {
+    const [zip1, zip2] = AutoSplit.splitZipCode(data.zipcode);
+    data.zipcode1 = zip1;
+    data.zipcode2 = zip2;
+  }
+  
+  // 電話番号
+  if (data.phone) {
+    const [phone1, phone2, phone3] = AutoSplit.splitPhone(data.phone);
+    data.phone1 = phone1;
+    data.phone2 = phone2;
+    data.phone3 = phone3;
+  }
+  
+  // メール確認
+  data.emailConfirm = data.email;
+  
+  await Storage.save(data);
+  showMessage('設定を保存しました', 'success');
+}
+
+// 文字数カウンターのセットアップ
+function setupCharacterCounter(fieldId, maxLength) {
+  const field = document.getElementById(fieldId);
+  if (field) {
+    field.addEventListener('input', () => {
+      updateCharacterCounter(fieldId, maxLength);
+    });
+  }
 }
 
 // 文字数カウンターの更新
-function updateCharCount(textareaId, countId, maxLength) {
-  const textarea = document.getElementById(textareaId);
-  const counter = document.getElementById(countId);
-  if (textarea && counter) {
-    const length = textarea.value.length;
-    counter.textContent = `${length} / ${maxLength}文字`;
-  }
-}
-
-// フォームデータの保存
-async function saveFormData() {
-  const formData = {
-    lastName: document.getElementById('lastName').value,
-    firstName: document.getElementById('firstName').value,
-    fullName: document.getElementById('fullName').value,
-    kanaLastName: document.getElementById('kanaLastName').value,
-    kanaFirstName: document.getElementById('kanaFirstName').value,
-    kanaFullName: document.getElementById('kanaFullName').value,
-    katakanaFullName: document.getElementById('katakanaFullName').value,
-    katakanaLastName: document.getElementById('katakanaLastName').value,
-    katakanaFirstName: document.getElementById('katakanaFirstName').value,
-    zipcode: document.getElementById('zipcode').value,
-    zipcode1: document.getElementById('zipcode1').value,
-    zipcode2: document.getElementById('zipcode2').value,
-    fullAddress: document.getElementById('fullAddress').value,
-    prefecture: document.getElementById('prefecture').value,
-    city: document.getElementById('city').value,
-    street: document.getElementById('street').value,
-    building: document.getElementById('building').value,
-    phone: document.getElementById('phone').value,
-    phone1: document.getElementById('phone1').value,
-    phone2: document.getElementById('phone2').value,
-    phone3: document.getElementById('phone3').value,
-    fax: document.getElementById('fax').value,
-    email: document.getElementById('email').value,
-    companyName: document.getElementById('companyName').value,
-    companyKana: document.getElementById('companyKana').value,
-    department: document.getElementById('department').value,
-    position: document.getElementById('position').value,
-    url: document.getElementById('url').value,
-    subject: document.getElementById('subject').value,
-    message300: document.getElementById('message300').value,
-    message800: document.getElementById('message800').value
-  };
+function updateCharacterCounter(fieldId, maxLength) {
+  const field = document.getElementById(fieldId);
+  const counter = document.getElementById(`${fieldId}-counter`);
   
-  try {
-    await chrome.storage.local.set({ formData });
-    showMessage('設定を保存しました!', 'success');
-  } catch (error) {
-    showMessage('保存に失敗しました', 'error');
-  }
-}
-
-// フォームデータのリセット
-async function resetFormData() {
-  try {
-    await chrome.storage.local.remove('formData');
+  if (field && counter) {
+    const length = field.value.length;
+    counter.textContent = `${length} / ${maxLength}文字`;
     
-    // すべてのフィールドをクリア
-    document.getElementById('settings-form').reset();
-    
-    // 文字数カウンターをリセット
-    document.getElementById('count-300').textContent = '0 / 300文字';
-    document.getElementById('count-800').textContent = '0 / 800文字';
-    
-    showMessage('設定をリセットしました', 'success');
-  } catch (error) {
-    showMessage('リセットに失敗しました', 'error');
+    if (length > maxLength) {
+      counter.style.color = '#ef4444';
+    } else {
+      counter.style.color = '#6b7280';
+    }
   }
 }
 
 // メッセージ表示
-function showMessage(message, type) {
-  const messageElement = document.getElementById('save-message');
-  messageElement.textContent = message;
-  messageElement.className = `save-message ${type}`;
+function showMessage(message, type = 'success') {
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `message message-${type}`;
+  messageDiv.textContent = message;
+  messageDiv.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    z-index: 10000;
+    animation: slideIn 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  `;
+  
+  if (type === 'success') {
+    messageDiv.style.background = '#10b981';
+  } else if (type === 'error') {
+    messageDiv.style.background = '#ef4444';
+  }
+  
+  document.body.appendChild(messageDiv);
   
   setTimeout(() => {
-    messageElement.className = 'save-message';
+    messageDiv.style.animation = 'slideOut 0.3s ease';
+    setTimeout(() => {
+      document.body.removeChild(messageDiv);
+    }, 300);
   }, 3000);
 }
-

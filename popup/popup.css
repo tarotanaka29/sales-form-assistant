@@ -192,3 +192,40 @@ h1-old {
   margin-bottom: 4px;
 }
 
+
+/* プロファイル選択 */
+.profile-selector {
+  margin-bottom: 15px;
+  padding: 12px;
+  background: #f3f4f6;
+  border-radius: 6px;
+}
+
+.profile-selector label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.profile-selector select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 13px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profile-selector select:hover {
+  border-color: #9ca3af;
+}
+
+.profile-selector select:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}

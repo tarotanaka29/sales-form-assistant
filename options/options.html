@@ -12,6 +12,29 @@
       <p class="subtitle">BtoB営業代行業務向けツール</p>
     </header>
     
+    <!-- プロファイル管理セクション -->
+    <section class="profile-section">
+      <div class="profile-header">
+        <h2>📁 プロファイル管理</h2>
+        <div class="profile-info">最大10個まで保存可能</div>
+      </div>
+      
+      <div class="profile-controls">
+        <div class="profile-select-group">
+          <label for="profile-select">現在のプロファイル:</label>
+          <select id="profile-select">
+            <option value="">読み込み中...</option>
+          </select>
+        </div>
+        
+        <div class="profile-buttons">
+          <button type="button" id="new-profile-btn" class="btn btn-primary">➕ 新規作成</button>
+          <button type="button" id="rename-profile-btn" class="btn btn-secondary">✏️ 名前変更</button>
+          <button type="button" id="delete-profile-btn" class="btn btn-danger">🗑️ 削除</button>
+        </div>
+      </div>
+    </section>
+
     <form id="settings-form">
       <!-- 会社情報セクション -->
       <section class="form-section">
