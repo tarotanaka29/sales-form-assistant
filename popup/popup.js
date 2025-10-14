@@ -1,50 +1,64 @@
 // ポップアップスクリプト
 document.addEventListener('DOMContentLoaded', async () => {
-  // 統計情報の読み込み
-  loadStats();
-  
-  // プロファイル一覧を読み込み
-  await loadPopupProfileList();
-  
-  // プロファイル選択イベント
-  document.getElementById('popup-profile-select').addEventListener('change', async (e) => {
-    const profileId = e.target.value;
-    if (profileId) {
-      await Storage.setCurrentProfileId(profileId);
-    }
-  });
-  
-
-  
-  // 実行ボタン
-  document.getElementById('execute-btn').addEventListener('click', async () => {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    chrome.tabs.sendMessage(tab.id, { action: 'auto-fill' });
-    window.close();
-  });
-  
-  // 設定ボタン
-  document.getElementById('settings-btn').addEventListener('click', () => {
-    chrome.runtime.openOptionsPage();
-  });
-  
-  // 個別入力モードのトグル
-  document.getElementById('toggle-manual').addEventListener('click', () => {
-    const content = document.getElementById('manual-content');
-    const icon = document.querySelector('.toggle-icon');
+  try {
+    // 統計情報の読み込み
+    loadStats();
     
-    content.classList.toggle('expanded');
-    icon.classList.toggle('rotated');
-  });
-  
-  // 個別フィールドボタンのイベント
-  const fieldButtons = document.querySelectorAll('.field-btn');
-  fieldButtons.forEach(button => {
-    button.addEventListener('click', async () => {
-      const fieldName = button.getAttribute('data-field');
-      await fillSingleField(fieldName, button);
+    // プロファイル一覧を読み込み
+    await loadPopupProfileList();
+    
+    // プロファイル選択イベント
+    const profileSelect = document.getElementById('popup-profile-select');
+    if (profileSelect) {
+      profileSelect.addEventListener('change', async (e) => {
+        const profileId = e.target.value;
+        if (profileId) {
+          await Storage.setCurrentProfileId(profileId);
+        }
+      });
+    }
+    
+    // 実行ボタン
+    const executeBtn = document.getElementById('execute-btn');
+    if (executeBtn) {
+      executeBtn.addEventListener('click', async () => {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        chrome.tabs.sendMessage(tab.id, { action: 'auto-fill' });
+        window.close();
+      });
+    }
+    
+    // 設定ボタン
+    const settingsBtn = document.getElementById('settings-btn');
+    if (settingsBtn) {
+      settingsBtn.addEventListener('click', () => {
+        chrome.runtime.openOptionsPage();
+      });
+    }
+    
+    // 個別入力モードのトグル
+    const toggleManual = document.getElementById('toggle-manual');
+    if (toggleManual) {
+      toggleManual.addEventListener('click', () => {
+        const content = document.getElementById('manual-content');
+        const icon = document.querySelector('.toggle-icon');
+        
+        if (content) content.classList.toggle('expanded');
+        if (icon) icon.classList.toggle('rotated');
+      });
+    }
+    
+    // 個別フィールドボタンのイベント
+    const fieldButtons = document.querySelectorAll('.field-btn');
+    fieldButtons.forEach(button => {
+      button.addEventListener('click', async () => {
+        const fieldName = button.getAttribute('data-field');
+        await fillSingleField(fieldName, button);
+      });
     });
-  });
+  } catch (error) {
+    console.error('Popup initialization error:', error);
+  }
 });
 
 // 統計情報の読み込み
