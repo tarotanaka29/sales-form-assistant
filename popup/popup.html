@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <h1>🚀 営業フォーム自動入力</h1>
+    <p class="subtitle">BtoB営業代行ツール</p>
+    
+    <div class="status-section">
+      <div class="status-item">
+        <span>今日の実行回数:</span>
+        <span id="daily-count">0</span>
+      </div>
+      <div class="status-item">
+        <span>成功率:</span>
+        <span id="success-rate">-%</span>
+      </div>
+    </div>
+    
+    <div class="action-section">
+      <button id="execute-btn" class="primary-btn">
+        Ctrl+B で自動入力実行
+      </button>
+      
+      <button id="settings-btn" class="secondary-btn">
+        ⚙️ 設定を開く
+      </button>
+    </div>
+    
+    <!-- 個別入力セクション -->
+    <div class="manual-section">
+      <div class="section-header" id="toggle-manual">
+        <span>📝 個別入力モード</span>
+        <span class="toggle-icon">▼</span>
+      </div>
+      
+      <div class="manual-content" id="manual-content">
+        <p class="manual-description">
+          自動入力がうまくいかない場合は、各項目ごとにクリックして入力できます。
+        </p>
+        
+        <!-- 会社情報 -->
+        <div class="field-group">
+          <h3>🏢 会社情報</h3>
+          <button class="field-btn" data-field="companyName">会社名</button>
+          <button class="field-btn" data-field="companyKana">会社名(フリガナ)</button>
+          <button class="field-btn" data-field="department">部署</button>
+          <button class="field-btn" data-field="position">役職</button>
+          <button class="field-btn" data-field="url">会社URL</button>
+        </div>
+        
+        <!-- 住所情報 -->
+        <div class="field-group">
+          <h3>📍 所在地</h3>
+          <button class="field-btn" data-field="zipcode">郵便番号(フル)</button>
+          <button class="field-btn" data-field="zipcode1">郵便番号1</button>
+          <button class="field-btn" data-field="zipcode2">郵便番号2</button>
+          <button class="field-btn" data-field="fullAddress">住所</button>
+          <button class="field-btn" data-field="prefecture">都道府県</button>
+          <button class="field-btn" data-field="city">市区町村</button>
+          <button class="field-btn" data-field="street">番地</button>
+          <button class="field-btn" data-field="building">建物名</button>
+        </div>
+        
+        <!-- 連絡先 -->
+        <div class="field-group">
+          <h3>📞 連絡先</h3>
+          <button class="field-btn" data-field="phone">電話番号(フル)</button>
+          <button class="field-btn" data-field="phone1">電話番号1</button>
+          <button class="field-btn" data-field="phone2">電話番号2</button>
+          <button class="field-btn" data-field="phone3">電話番号3</button>
+          <button class="field-btn" data-field="fax">FAX番号</button>
+          <button class="field-btn" data-field="email">メールアドレス</button>
+          <button class="field-btn" data-field="emailConfirm">メールアドレス(確認)</button>
+        </div>
+        
+        <!-- 担当者情報 -->
+        <div class="field-group">
+          <h3>👤 担当者情報</h3>
+          <button class="field-btn" data-field="lastName">姓</button>
+          <button class="field-btn" data-field="firstName">名</button>
+          <button class="field-btn" data-field="fullName">名前(フル)</button>
+          <button class="field-btn" data-field="kanaFullName">ふりがな(フル)</button>
+          <button class="field-btn" data-field="kanaLastName">ふりがな１</button>
+          <button class="field-btn" data-field="kanaFirstName">ふりがな２</button>
+          <button class="field-btn" data-field="katakanaFullName">フリガナ(フル)</button>
+          <button class="field-btn" data-field="katakanaLastName">フリガナ１</button>
+          <button class="field-btn" data-field="katakanaFirstName">フリガナ２</button>
+        </div>
+        
+        <!-- 問い合わせ情報 -->
+        <div class="field-group">
+          <h3>💬 問い合わせ情報</h3>
+          <button class="field-btn" data-field="subject">件名</button>
+          <button class="field-btn" data-field="message300">問い合わせ内容(300文字)</button>
+          <button class="field-btn" data-field="message800">問い合わせ内容(800文字)</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="help-section">
+      <p><strong>使い方:</strong></p>
+      <ol>
+        <li>設定で情報を登録</li>
+        <li>問い合わせフォームを開く</li> 
+        <li>Ctrl+B を押す</li>
+        <li>うまくいかない場合は個別入力モードを使用</li>
+      </ol>
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
+

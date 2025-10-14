@@ -1,0 +1,52 @@
+      <!-- 担当者情報セクション -->
+      <section class="form-section">
+        <h2>👤 担当者情報</h2>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="lastName">姓</label>
+            <input type="text" id="lastName" name="lastName" placeholder="田中">
+          </div>
+          <div class="form-group">  
+            <label for="firstName">名</label>
+            <input type="text" id="firstName" name="firstName" placeholder="太朗">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="fullName">名前(フル)</label>
+          <input type="text" id="fullName" name="fullName" placeholder="田中太朗">
+        </div>
+        
+        <div class="form-group">
+          <label for="kanaFullName">ふりがな(フル)</label>
+          <input type="text" id="kanaFullName" name="kanaFullName" placeholder="たなか たろう">
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="kanaLastName">ふりがな１</label>
+            <input type="text" id="kanaLastName" name="kanaLastName" placeholder="たなか">
+          </div>
+          <div class="form-group">
+            <label for="kanaFirstName">ふりがな２</label>
+            <input type="text" id="kanaFirstName" name="kanaFirstName" placeholder="たろう">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="katakanaFullName">フリガナ(フル)</label>
+          <input type="text" id="katakanaFullName" name="katakanaFullName" placeholder="タナカ タロウ">
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="katakanaLastName">フリガナ１</label>
+            <input type="text" id="katakanaLastName" name="katakanaLastName" placeholder="タナカ">
+          </div>
+          <div class="form-group">
+            <label for="katakanaFirstName">フリガナ２</label>
+            <input type="text" id="katakanaFirstName" name="katakanaFirstName" placeholder="タロウ">
+          </div>
+        </div>
+      </section>

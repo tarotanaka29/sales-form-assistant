@@ -1,0 +1,194 @@
+body {
+  width: 400px;
+  max-height: 600px;
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.popup-container {
+  padding: 20px;
+  color: white;
+}
+
+h1 {
+  margin: 0 0 5px 0;
+  font-size: 18px;
+  text-align: center;
+}
+
+.subtitle {
+  margin: 0 0 15px 0;
+  font-size: 11px;
+  text-align: center;
+  opacity: 0.8;
+}
+
+h1-old {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  text-align: center;
+}
+
+.status-section {
+  background: rgba(255,255,255,0.1);
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.status-item:last-child {
+  margin-bottom: 0;
+}
+
+.action-section {
+  margin-bottom: 20px;
+}
+
+.primary-btn {
+  width: 100%;
+  padding: 12px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: background 0.3s;
+}
+
+.primary-btn:hover {
+  background: #45a049;
+}
+
+.secondary-btn {
+  width: 100%;
+  padding: 10px;
+  background: rgba(255,255,255,0.2);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.secondary-btn:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+/* 個別入力モード */
+.manual-section {
+  background: rgba(255,255,255,0.1);
+  border-radius: 8px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.section-header {
+  padding: 12px 15px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+  transition: background 0.3s;
+}
+
+.section-header:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.toggle-icon {
+  font-size: 12px;
+  transition: transform 0.3s;
+}
+
+.toggle-icon.rotated {
+  transform: rotate(-180deg);
+}
+
+.manual-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  padding: 0 15px;
+}
+
+.manual-content.expanded {
+  max-height: 2000px;
+  padding: 15px;
+}
+
+.manual-description {
+  font-size: 12px;
+  opacity: 0.9;
+  margin: 0 0 15px 0;
+  line-height: 1.4;
+}
+
+.field-group {
+  margin-bottom: 15px;
+}
+
+.field-group:last-child {
+  margin-bottom: 0;
+}
+
+.field-group h3 {
+  font-size: 13px;
+  margin: 0 0 8px 0;
+  opacity: 0.9;
+}
+
+.field-btn {
+  display: inline-block;
+  padding: 6px 12px;
+  margin: 3px;
+  background: rgba(255,255,255,0.2);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.field-btn:hover {
+  background: rgba(255,255,255,0.3);
+  transform: translateY(-1px);
+}
+
+.field-btn:active {
+  transform: translateY(0);
+}
+
+.field-btn.copied {
+  background: #4caf50;
+  border-color: #4caf50;
+}
+
+.help-section {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.help-section p {
+  margin: 0 0 5px 0;
+}
+
+.help-section ol {
+  margin: 10px 0;
+  padding-left: 16px;
+}
+
+.help-section li {
+  margin-bottom: 4px;
+}
+

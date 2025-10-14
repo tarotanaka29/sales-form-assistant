@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>営業フォーム自動入力 - 設定</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🚀 営業フォーム自動入力アシスタント - 設定</h1>
+      <p class="subtitle">BtoB営業代行業務向けツール</p>
+    </header>
+    
+    <form id="settings-form">
+      <!-- 会社情報セクション -->
+      <section class="form-section">
+        <h2>🏢 会社情報</h2>
+        
+        <div class="form-group">
+          <label for="companyName">会社名</label>
+          <input type="text" id="companyName" name="companyName" placeholder="株式会社サンプル">
+        </div>
+        
+        <div class="form-group">
+          <label for="companyKana">会社名(フリガナ)</label>
+          <input type="text" id="companyKana" name="companyKana" placeholder="カブシキガイシャサンプル">
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="department">部署</label>
+            <input type="text" id="department" name="department" placeholder="営業部">
+          </div>
+          <div class="form-group">
+            <label for="position">役職</label>
+            <input type="text" id="position" name="position" placeholder="課長">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="url">会社URL</label>
+          <input type="url" id="url" name="url" placeholder="https://example.com">
+        </div>
+        
+        <h3 class="subsection-title">📍 所在地</h3>
+        
+        <div class="form-group">
+          <label for="zipcode">郵便番号(フル)</label>
+          <input type="text" id="zipcode" name="zipcode" placeholder="123-4567">
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="zipcode1">郵便番号1(3桁)</label>
+            <input type="text" id="zipcode1" name="zipcode1" placeholder="123" maxlength="3">
+          </div>
+          <div class="form-group">
+            <label for="zipcode2">郵便番号2(4桁)</label>
+            <input type="text" id="zipcode2" name="zipcode2" placeholder="4567" maxlength="4">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="fullAddress">住所</label>
+          <input type="text" id="fullAddress" name="fullAddress" placeholder="東京都渋谷区道玄坂1-2-3">
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="prefecture">都道府県</label>
+            <input type="text" id="prefecture" name="prefecture" placeholder="東京都">
+          </div>
+          <div class="form-group">
+            <label for="city">市区町村</label>  
+            <input type="text" id="city" name="city" placeholder="渋谷区">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="street">番地</label>
+            <input type="text" id="street" name="street" placeholder="道玄坂1-2-3">
+          </div>
+          <div class="form-group">
+            <label for="building">建物名</label>
+            <input type="text" id="building" name="building" placeholder="サンプルビル5F">
+          </div>
+        </div>
+        
+        <h3 class="subsection-title">📞 連絡先</h3>
+        
+        <div class="form-group">
+          <label for="phone">電話番号(フル)</label>
+          <input type="text" id="phone" name="phone" placeholder="03-1234-5678">
+        </div>
+        
+        <div class="form-row-3">
+          <div class="form-group">
+            <label for="phone1">電話番号1</label>
+            <input type="text" id="phone1" name="phone1" placeholder="03">
+          </div>
+          <div class="form-group">
+            <label for="phone2">電話番号2</label>
+            <input type="text" id="phone2" name="phone2" placeholder="1234">
+          </div>
+          <div class="form-group">
+            <label for="phone3">電話番号3</label>
+            <input type="text" id="phone3" name="phone3" placeholder="5678">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="fax">FAX番号</label>
+          <input type="text" id="fax" name="fax" placeholder="03-1234-5679">
+        </div>
+        
+        <div class="form-group">
+          <label for="email">メールアドレス</label>
+          <input type="email" id="email" name="email" placeholder="tanaka@example.com">
+        </div>
+      </section>
+      
+      <!-- 担当者情報セクション -->
+      <section class="form-section">
+        <h2>👤 担当者情報</h2>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="lastName">姓</label>
+            <input type="text" id="lastName" name="lastName" placeholder="田中">
+          </div>
+          <div class="form-group">  
+            <label for="firstName">名</label>
+            <input type="text" id="firstName" name="firstName" placeholder="太朗">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="fullName">名前(フル)</label>
+          <input type="text" id="fullName" name="fullName" placeholder="田中太朗">
+        </div>
+        
+        <div class="form-group">
+          <label for="kanaFullName">ふりがな(フル)</label>
+          <input type="text" id="kanaFullName" name="kanaFullName" placeholder="たなか たろう">
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="kanaLastName">ふりがな１</label>
+            <input type="text" id="kanaLastName" name="kanaLastName" placeholder="たなか">
+          </div>
+          <div class="form-group">
+            <label for="kanaFirstName">ふりがな２</label>
+            <input type="text" id="kanaFirstName" name="kanaFirstName" placeholder="たろう">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="katakanaFullName">フリガナ(フル)</label>
+          <input type="text" id="katakanaFullName" name="katakanaFullName" placeholder="タナカ タロウ">
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="katakanaLastName">フリガナ１</label>
+            <input type="text" id="katakanaLastName" name="katakanaLastName" placeholder="タナカ">
+          </div>
+          <div class="form-group">
+            <label for="katakanaFirstName">フリガナ２</label>
+            <input type="text" id="katakanaFirstName" name="katakanaFirstName" placeholder="タロウ">
+          </div>
+        </div>
+      </section>
+      
+      <!-- 問い合わせ情報セクション -->
+      <section class="form-section">
+        <h2>💬 問い合わせ情報</h2>
+        
+        <div class="form-group">
+          <label for="subject">件名</label>
+          <input type="text" id="subject" name="subject" placeholder="サービスに関するお問い合わせ">
+        </div>
+        
+        <div class="form-group">
+          <label for="message300">問い合わせ内容(最大300文字)</label>
+          <textarea id="message300" name="message300" rows="4" maxlength="300" placeholder="短い問い合わせ内容を入力してください(最大300文字)"></textarea>
+          <div class="char-count" id="count-300">0 / 300文字</div>
+        </div>
+        
+        <div class="form-group">
+          <label for="message800">問い合わせ内容(最大800文字)</label>
+          <textarea id="message800" name="message800" rows="8" maxlength="800" placeholder="詳細な問い合わせ内容を入力してください(最大800文字)"></textarea>
+          <div class="char-count" id="count-800">0 / 800文字</div>
+        </div>
+      </section>
+      
+      <div class="form-actions">
+        <button type="submit" class="save-btn">💾 設定を保存</button>
+        <button type="button" id="reset-btn" class="reset-btn">🔄 リセット</button>
+      </div>
+      
+      <div id="save-message" class="save-message"></div>
+    </form>
+  </div>
+  
+  <script src="options.js"></script>
+</body>
+</html>
