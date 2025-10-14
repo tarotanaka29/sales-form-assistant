@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       profileSelect.addEventListener('change', async (e) => {
         const profileId = e.target.value;
         if (profileId) {
-          await Storage.setCurrentProfileId(profileId);
+          await chrome.storage.local.set({ currentProfileId: profileId });
         }
       });
     }
@@ -214,20 +214,42 @@ function splitKana(fullKana) {
 
 // ポップアップ用プロファイル一覧読み込み
 async function loadPopupProfileList() {
-  const profileList = await Storage.getProfileList();
-  const currentProfileId = await Storage.getCurrentProfileId();
-  const select = document.getElementById('popup-profile-select');
-  
-  select.innerHTML = '';
-  
-  profileList.forEach(profile => {
-    const option = document.createElement('option');
-    option.value = profile.id;
-    option.textContent = profile.name;
-    if (profile.id === currentProfileId) {
-      option.selected = true;
+  try {
+    const select = document.getElementById('popup-profile-select');
+    if (!select) {
+      console.log('Profile select not found, skipping');
+      return;
     }
-    select.appendChild(option);
-  });
+    
+    const result = await chrome.storage.local.get(['profiles', 'currentProfileId']);
+    const profiles = result.profiles || {};
+    const currentProfileId = result.currentProfileId;
+    
+    select.innerHTML = '';
+    
+    const profileList = Object.values(profiles).sort((a, b) => 
+      new Date(a.createdAt) - new Date(b.createdAt)
+    );
+    
+    if (profileList.length === 0) {
+      const option = document.createElement('option');
+      option.value = 'default';
+      option.textContent = 'デフォルト';
+      select.appendChild(option);
+      return;
+    }
+    
+    profileList.forEach(profile => {
+      const option = document.createElement('option');
+      option.value = profile.id;
+      option.textContent = profile.name;
+      if (profile.id === currentProfileId) {
+        option.selected = true;
+      }
+      select.appendChild(option);
+    });
+  } catch (error) {
+    console.error('Error loading profile list:', error);
+  }
 }
 

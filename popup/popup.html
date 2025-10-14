@@ -20,6 +20,13 @@
       </div>
     </div>
     
+    <div class="profile-selector">
+      <label for="popup-profile-select">プロファイル:</label>
+      <select id="popup-profile-select">
+        <option value="">読み込み中...</option>
+      </select>
+    </div>
+    
     <div class="action-section">
       <button id="execute-btn" class="primary-btn">
         Ctrl+B で自動入力実行
@@ -112,6 +119,7 @@
     </div>
   </div>
   
+  <script src="../utils/storage.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>
