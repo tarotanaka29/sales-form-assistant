@@ -319,3 +319,50 @@ textarea {
   transform: none;
   box-shadow: none;
 }
+
+/* 設定切り替えタブ */
+.setting-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0;
+}
+
+.tab-btn {
+  padding: 12px 24px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  color: #6b7280;
+  transition: all 0.3s ease;
+  margin-bottom: -2px;
+}
+
+.tab-btn:hover {
+  color: #4f46e5;
+  background: #f3f4f6;
+}
+
+.tab-btn.active {
+  color: #4f46e5;
+  border-bottom-color: #4f46e5;
+  font-weight: 600;
+}
+
+.current-setting-info {
+  background: #f0f9ff;
+  border-left: 4px solid #3b82f6;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #1e40af;
+}
+
+.current-setting-info span {
+  font-weight: 600;
+}

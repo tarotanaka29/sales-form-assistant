@@ -1,10 +1,27 @@
-// 設定画面スクリプト
+// シンプルな2設定管理
 document.addEventListener('DOMContentLoaded', async () => {
-  // プロファイル一覧を読み込み
-  await loadProfileList();
-  
-  // 現在のプロファイルのデータを読み込み
+  // 現在の設定を読み込み
   await loadFormData();
+  
+  // タブ切り替えイベント
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const settingNumber = parseInt(e.target.getAttribute('data-setting'));
+      
+      // タブのアクティブ状態を切り替え
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      e.target.classList.add('active');
+      
+      // 設定を切り替え
+      await Storage.setCurrentSetting(settingNumber);
+      await loadFormData();
+      
+      // ラベル更新
+      document.getElementById('current-setting-label').textContent = `設定${settingNumber}`;
+      
+      showMessage(`設定${settingNumber}に切り替えました`, 'success');
+    });
+  });
   
   // フォーム送信イベント
   document.getElementById('settings-form').addEventListener('submit', async (e) => {
@@ -12,67 +29,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     await saveFormData();
   });
   
-  // プロファイル選択イベント
-  document.getElementById('profile-select').addEventListener('change', async (e) => {
-    const profileId = e.target.value;
-    if (profileId) {
-      await Storage.setCurrentProfileId(profileId);
+  // リセットボタン
+  document.getElementById('reset-btn').addEventListener('click', async () => {
+    const currentSetting = await Storage.getCurrentSetting();
+    if (confirm(`設定${currentSetting}をリセットしますか?`)) {
+      await Storage.reset();
       await loadFormData();
-      showMessage('プロファイルを切り替えました', 'success');
-    }
-  });
-  
-  // 新規作成ボタン
-  document.getElementById('new-profile-btn').addEventListener('click', async () => {
-    const name = prompt('新しいプロファイル名を入力してください:', `プロファイル ${await getProfileCount() + 1}`);
-    if (name) {
-      try {
-        const profileId = await Storage.createNewProfile(name);
-        await Storage.setCurrentProfileId(profileId);
-        await loadProfileList();
-        await loadFormData();
-        showMessage(`プロファイル「${name}」を作成しました`, 'success');
-      } catch (error) {
-        showMessage(error.message, 'error');
-      }
-    }
-  });
-  
-  // 名前変更ボタン
-  document.getElementById('rename-profile-btn').addEventListener('click', async () => {
-    const profileId = await Storage.getCurrentProfileId();
-    const profiles = await Storage.getAllProfiles();
-    const currentProfile = profiles[profileId];
-    
-    if (currentProfile) {
-      const newName = prompt('新しいプロファイル名を入力してください:', currentProfile.name);
-      if (newName && newName !== currentProfile.name) {
-        await Storage.renameProfile(profileId, newName);
-        await loadProfileList();
-        showMessage(`プロファイル名を「${newName}」に変更しました`, 'success');
-      }
-    }
-  });
-  
-  // 削除ボタン
-  document.getElementById('delete-profile-btn').addEventListener('click', async () => {
-    const profileId = await Storage.getCurrentProfileId();
-    const profiles = await Storage.getAllProfiles();
-    const currentProfile = profiles[profileId];
-    
-    if (currentProfile) {
-      const profileCount = Object.keys(profiles).length;
-      if (profileCount === 1) {
-        showMessage('最後のプロファイルは削除できません', 'error');
-        return;
-      }
-      
-      if (confirm(`プロファイル「${currentProfile.name}」を削除しますか?`)) {
-        await Storage.deleteProfile(profileId);
-        await loadProfileList();
-        await loadFormData();
-        showMessage(`プロファイル「${currentProfile.name}」を削除しました`, 'success');
-      }
+      showMessage('設定をリセットしました', 'success');
     }
   });
   
@@ -81,44 +44,29 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupCharacterCounter('message800', 800);
 });
 
-// プロファイル一覧を読み込み
-async function loadProfileList() {
-  const profileList = await Storage.getProfileList();
-  const currentProfileId = await Storage.getCurrentProfileId();
-  const select = document.getElementById('profile-select');
-  
-  select.innerHTML = '';
-  
-  profileList.forEach(profile => {
-    const option = document.createElement('option');
-    option.value = profile.id;
-    option.textContent = profile.name;
-    if (profile.id === currentProfileId) {
-      option.selected = true;
-    }
-    select.appendChild(option);
-  });
-  
-  // 削除ボタンの有効/無効を切り替え
-  const deleteBtn = document.getElementById('delete-profile-btn');
-  deleteBtn.disabled = profileList.length === 1;
-}
-
-// プロファイル数を取得
-async function getProfileCount() {
-  const profiles = await Storage.getAllProfiles();
-  return Object.keys(profiles).length;
-}
-
-// フォームデータを読み込み
+// フォームデータの読み込み
 async function loadFormData() {
+  const currentSetting = await Storage.getCurrentSetting();
   const data = await Storage.load();
   
-  // 各フィールドに値を設定
+  // フォームの全フィールドに値を設定
   Object.keys(data).forEach(key => {
-    const element = document.getElementById(key);
-    if (element) {
-      element.value = data[key] || '';
+    const field = document.getElementById(key);
+    if (field) {
+      field.value = data[key] || '';
+    }
+  });
+  
+  // 現在の設定番号を表示
+  document.getElementById('current-setting-label').textContent = `設定${currentSetting}`;
+  
+  // タブのアクティブ状態を更新
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    const settingNumber = parseInt(btn.getAttribute('data-setting'));
+    if (settingNumber === currentSetting) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
     }
   });
   
@@ -129,51 +77,23 @@ async function loadFormData() {
   }, 100);
 }
 
-// フォームデータを保存
+// フォームデータの保存
 async function saveFormData() {
   const form = document.getElementById('settings-form');
   const formData = new FormData(form);
+  
   const data = {};
-  
-  formData.forEach((value, key) => {
+  for (let [key, value] of formData.entries()) {
     data[key] = value;
-  });
-  
-  // 自動分割処理
-  // ふりがな
-  if (data.kanaFullName) {
-    const [lastName, firstName] = AutoSplit.splitKana(data.kanaFullName);
-    data.kanaLastName = lastName;
-    data.kanaFirstName = firstName;
   }
   
-  // フリガナ
-  if (data.katakanaFullName) {
-    const [lastName, firstName] = AutoSplit.splitKatakana(data.katakanaFullName);
-    data.katakanaLastName = lastName;
-    data.katakanaFirstName = firstName;
-  }
-  
-  // 郵便番号
-  if (data.zipcode) {
-    const [zip1, zip2] = AutoSplit.splitZipCode(data.zipcode);
-    data.zipcode1 = zip1;
-    data.zipcode2 = zip2;
-  }
-  
-  // 電話番号
-  if (data.phone) {
-    const [phone1, phone2, phone3] = AutoSplit.splitPhone(data.phone);
-    data.phone1 = phone1;
-    data.phone2 = phone2;
-    data.phone3 = phone3;
-  }
-  
-  // メール確認
+  // メールアドレス確認用
   data.emailConfirm = data.email;
   
   await Storage.save(data);
-  showMessage('設定を保存しました', 'success');
+  
+  const currentSetting = await Storage.getCurrentSetting();
+  showMessage(`設定${currentSetting}を保存しました`, 'success');
 }
 
 // 文字数カウンターのセットアップ

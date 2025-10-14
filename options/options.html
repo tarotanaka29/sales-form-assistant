@@ -12,28 +12,15 @@
       <p class="subtitle">BtoB営業代行業務向けツール</p>
     </header>
     
-    <!-- プロファイル管理セクション -->
-    <section class="profile-section">
-      <div class="profile-header">
-        <h2>📁 プロファイル管理</h2>
-        <div class="profile-info">最大10個まで保存可能</div>
-      </div>
-      
-      <div class="profile-controls">
-        <div class="profile-select-group">
-          <label for="profile-select">現在のプロファイル:</label>
-          <select id="profile-select">
-            <option value="">読み込み中...</option>
-          </select>
-        </div>
-        
-        <div class="profile-buttons">
-          <button type="button" id="new-profile-btn" class="btn btn-primary">➕ 新規作成</button>
-          <button type="button" id="rename-profile-btn" class="btn btn-secondary">✏️ 名前変更</button>
-          <button type="button" id="delete-profile-btn" class="btn btn-danger">🗑️ 削除</button>
-        </div>
-      </div>
-    </section>
+    <!-- 設定切り替えタブ -->
+    <div class="setting-tabs">
+      <button class="tab-btn active" data-setting="1">📋 設定1</button>
+      <button class="tab-btn" data-setting="2">📋 設定2</button>
+    </div>
+    
+    <div class="current-setting-info">
+      現在の設定: <span id="current-setting-label">設定1</span>
+    </div>
 
     <form id="settings-form">
       <!-- 会社情報セクション -->
@@ -55,9 +42,10 @@
             <label for="department">部署</label>
             <input type="text" id="department" name="department" placeholder="営業部">
           </div>
+          
           <div class="form-group">
             <label for="position">役職</label>
-            <input type="text" id="position" name="position" placeholder="課長">
+            <input type="text" id="position" name="position" placeholder="部長">
           </div>
         </div>
         
@@ -65,8 +53,11 @@
           <label for="url">会社URL</label>
           <input type="url" id="url" name="url" placeholder="https://example.com">
         </div>
-        
-        <h3 class="subsection-title">📍 所在地</h3>
+      </section>
+
+      <!-- 所在地セクション -->
+      <section class="form-section">
+        <h2>📍 所在地</h2>
         
         <div class="form-group">
           <label for="zipcode">郵便番号(フル)</label>
@@ -78,6 +69,7 @@
             <label for="zipcode1">郵便番号1(3桁)</label>
             <input type="text" id="zipcode1" name="zipcode1" placeholder="123" maxlength="3">
           </div>
+          
           <div class="form-group">
             <label for="zipcode2">郵便番号2(4桁)</label>
             <input type="text" id="zipcode2" name="zipcode2" placeholder="4567" maxlength="4">
@@ -86,7 +78,7 @@
         
         <div class="form-group">
           <label for="fullAddress">住所(フル)</label>
-          <input type="text" id="fullAddress" name="fullAddress" placeholder="東京都渋谷区道玄坂1-2-3">
+          <input type="text" id="fullAddress" name="fullAddress" placeholder="東京都渋谷区〇〇1-2-3">
         </div>
         
         <div class="form-row">
@@ -94,8 +86,9 @@
             <label for="prefecture">都道府県</label>
             <input type="text" id="prefecture" name="prefecture" placeholder="東京都">
           </div>
+          
           <div class="form-group">
-            <label for="city">市区町村</label>  
+            <label for="city">市区町村</label>
             <input type="text" id="city" name="city" placeholder="渋谷区">
           </div>
         </div>
@@ -103,47 +96,53 @@
         <div class="form-row">
           <div class="form-group">
             <label for="street">番地</label>
-            <input type="text" id="street" name="street" placeholder="道玄坂1-2-3">
+            <input type="text" id="street" name="street" placeholder="〇〇1-2-3">
           </div>
+          
           <div class="form-group">
             <label for="building">建物名</label>
-            <input type="text" id="building" name="building" placeholder="サンプルビル5F">
+            <input type="text" id="building" name="building" placeholder="〇〇ビル5F">
           </div>
         </div>
-        
-        <h3 class="subsection-title">📞 連絡先</h3>
+      </section>
+
+      <!-- 連絡先セクション -->
+      <section class="form-section">
+        <h2>📞 連絡先</h2>
         
         <div class="form-group">
           <label for="phone">電話番号(フル)</label>
-          <input type="text" id="phone" name="phone" placeholder="03-1234-5678">
+          <input type="tel" id="phone" name="phone" placeholder="03-1234-5678">
         </div>
         
         <div class="form-row-3">
           <div class="form-group">
             <label for="phone1">電話番号1</label>
-            <input type="text" id="phone1" name="phone1" placeholder="03">
+            <input type="tel" id="phone1" name="phone1" placeholder="03">
           </div>
+          
           <div class="form-group">
             <label for="phone2">電話番号2</label>
-            <input type="text" id="phone2" name="phone2" placeholder="1234">
+            <input type="tel" id="phone2" name="phone2" placeholder="1234">
           </div>
+          
           <div class="form-group">
             <label for="phone3">電話番号3</label>
-            <input type="text" id="phone3" name="phone3" placeholder="5678">
+            <input type="tel" id="phone3" name="phone3" placeholder="5678">
           </div>
         </div>
         
         <div class="form-group">
           <label for="fax">FAX番号</label>
-          <input type="text" id="fax" name="fax" placeholder="03-1234-5679">
+          <input type="tel" id="fax" name="fax" placeholder="03-1234-5679">
         </div>
         
         <div class="form-group">
           <label for="email">メールアドレス</label>
-          <input type="email" id="email" name="email" placeholder="tanaka@example.com">
+          <input type="email" id="email" name="email" placeholder="example@company.com">
         </div>
       </section>
-      
+
       <!-- 担当者情報セクション -->
       <section class="form-section">
         <h2>👤 担当者情報</h2>
@@ -153,15 +152,16 @@
             <label for="lastName">姓</label>
             <input type="text" id="lastName" name="lastName" placeholder="田中">
           </div>
-          <div class="form-group">  
+          
+          <div class="form-group">
             <label for="firstName">名</label>
-            <input type="text" id="firstName" name="firstName" placeholder="太朗">
+            <input type="text" id="firstName" name="firstName" placeholder="太郎">
           </div>
         </div>
         
         <div class="form-group">
           <label for="fullName">名前(フル)</label>
-          <input type="text" id="fullName" name="fullName" placeholder="田中太朗">
+          <input type="text" id="fullName" name="fullName" placeholder="田中 太郎">
         </div>
         
         <div class="form-group">
@@ -174,6 +174,7 @@
             <label for="kanaLastName">ふりがな１</label>
             <input type="text" id="kanaLastName" name="kanaLastName" placeholder="たなか">
           </div>
+          
           <div class="form-group">
             <label for="kanaFirstName">ふりがな２</label>
             <input type="text" id="kanaFirstName" name="kanaFirstName" placeholder="たろう">
@@ -190,20 +191,21 @@
             <label for="katakanaLastName">フリガナ１</label>
             <input type="text" id="katakanaLastName" name="katakanaLastName" placeholder="タナカ">
           </div>
+          
           <div class="form-group">
             <label for="katakanaFirstName">フリガナ２</label>
             <input type="text" id="katakanaFirstName" name="katakanaFirstName" placeholder="タロウ">
           </div>
         </div>
       </section>
-      
+
       <!-- 問い合わせ情報セクション -->
       <section class="form-section">
         <h2>💬 問い合わせ情報</h2>
         
         <div class="form-group">
           <label for="subject">件名</label>
-          <input type="text" id="subject" name="subject" placeholder="サービスに関するお問い合わせ">
+          <input type="text" id="subject" name="subject" placeholder="お問い合わせ">
         </div>
         
         <div class="form-group">
@@ -223,11 +225,10 @@
         <button type="submit" class="save-btn">💾 設定を保存</button>
         <button type="button" id="reset-btn" class="reset-btn">🔄 リセット</button>
       </div>
-      
-      <div id="save-message" class="save-message"></div>
     </form>
   </div>
   
+  <script src="../utils/storage.js"></script>
   <script src="options.js"></script>
 </body>
 </html>

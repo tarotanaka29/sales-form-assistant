@@ -4,16 +4,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 統計情報の読み込み
     loadStats();
     
-    // プロファイル一覧を読み込み
-    await loadPopupProfileList();
+    // 現在の設定を読み込み
+    await loadCurrentSetting();
     
-    // プロファイル選択イベント
-    const profileSelect = document.getElementById('popup-profile-select');
-    if (profileSelect) {
-      profileSelect.addEventListener('change', async (e) => {
-        const profileId = e.target.value;
-        if (profileId) {
-          await chrome.storage.local.set({ currentProfileId: profileId });
+    // 設定選択イベント
+    const settingSelect = document.getElementById('popup-setting-select');
+    if (settingSelect) {
+      settingSelect.addEventListener('change', async (e) => {
+        const settingNumber = parseInt(e.target.value);
+        if (settingNumber) {
+          await chrome.storage.local.set({ currentSetting: settingNumber });
         }
       });
     }
@@ -212,44 +212,21 @@ function splitKana(fullKana) {
 }
 
 
-// ポップアップ用プロファイル一覧読み込み
-async function loadPopupProfileList() {
+// 現在の設定を読み込み
+async function loadCurrentSetting() {
   try {
-    const select = document.getElementById('popup-profile-select');
+    const select = document.getElementById('popup-setting-select');
     if (!select) {
-      console.log('Profile select not found, skipping');
+      console.log('Setting select not found, skipping');
       return;
     }
     
-    const result = await chrome.storage.local.get(['profiles', 'currentProfileId']);
-    const profiles = result.profiles || {};
-    const currentProfileId = result.currentProfileId;
+    const result = await chrome.storage.local.get('currentSetting');
+    const currentSetting = result.currentSetting || 1;
     
-    select.innerHTML = '';
-    
-    const profileList = Object.values(profiles).sort((a, b) => 
-      new Date(a.createdAt) - new Date(b.createdAt)
-    );
-    
-    if (profileList.length === 0) {
-      const option = document.createElement('option');
-      option.value = 'default';
-      option.textContent = 'デフォルト';
-      select.appendChild(option);
-      return;
-    }
-    
-    profileList.forEach(profile => {
-      const option = document.createElement('option');
-      option.value = profile.id;
-      option.textContent = profile.name;
-      if (profile.id === currentProfileId) {
-        option.selected = true;
-      }
-      select.appendChild(option);
-    });
+    select.value = currentSetting.toString();
   } catch (error) {
-    console.error('Error loading profile list:', error);
+    console.error('Error loading current setting:', error);
   }
 }
 

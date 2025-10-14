@@ -1,156 +1,37 @@
-// Chrome Storage API ラッパー
+// シンプルなストレージ管理（2つの設定のみ）
 const Storage = {
-  MAX_PROFILES: 10,
-  
-  // データ保存（現在のプロファイルに保存）
-  async save(data) {
-    const currentProfileId = await this.getCurrentProfileId();
-    return this.saveProfile(currentProfileId, data);
-  },
-  
-  // データ読み込み（現在のプロファイルから読み込み）
-  async load() {
-    const currentProfileId = await this.getCurrentProfileId();
-    return this.loadProfile(currentProfileId);
-  },
-  
-  // プロファイル保存
-  async saveProfile(profileId, data, profileName = null) {
-    const profiles = await this.getAllProfiles();
-    
-    // プロファイルが存在しない場合は新規作成
-    if (!profiles[profileId]) {
-      profiles[profileId] = {
-        id: profileId,
-        name: profileName || `プロファイル ${Object.keys(profiles).length + 1}`,
-        data: data,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-    } else {
-      // 既存プロファイルを更新
-      profiles[profileId].data = data;
-      profiles[profileId].updatedAt = new Date().toISOString();
-      if (profileName) {
-        profiles[profileId].name = profileName;
-      }
-    }
-    
-    await chrome.storage.local.set({ profiles });
-    return profiles[profileId];
-  },
-  
-  // プロファイル読み込み
-  async loadProfile(profileId) {
-    const profiles = await this.getAllProfiles();
-    if (profiles[profileId]) {
-      return profiles[profileId].data;
-    }
-    return this.getDefaultData();
-  },
-  
-  // すべてのプロファイルを取得
-  async getAllProfiles() {
-    const result = await chrome.storage.local.get('profiles');
-    return result.profiles || {};
-  },
-  
-  // プロファイル一覧を取得（配列形式）
-  async getProfileList() {
-    const profiles = await this.getAllProfiles();
-    return Object.values(profiles).sort((a, b) => 
-      new Date(a.createdAt) - new Date(b.createdAt)
-    );
-  },
-  
-  // プロファイル削除
-  async deleteProfile(profileId) {
-    const profiles = await this.getAllProfiles();
-    delete profiles[profileId];
-    await chrome.storage.local.set({ profiles });
-    
-    // 削除したプロファイルが現在のプロファイルだった場合
-    const currentProfileId = await this.getCurrentProfileId();
-    if (currentProfileId === profileId) {
-      // 最初のプロファイルに切り替え
-      const profileList = Object.keys(profiles);
-      if (profileList.length > 0) {
-        await this.setCurrentProfileId(profileList[0]);
-      } else {
-        // プロファイルがない場合はデフォルトを作成
-        await this.createDefaultProfile();
-      }
-    }
-  },
-  
-  // 現在のプロファイルIDを取得
-  async getCurrentProfileId() {
-    const result = await chrome.storage.local.get('currentProfileId');
-    if (result.currentProfileId) {
-      return result.currentProfileId;
-    }
-    
-    // 現在のプロファイルがない場合はデフォルトを作成
-    return await this.createDefaultProfile();
-  },
-  
-  // 現在のプロファイルIDを設定
-  async setCurrentProfileId(profileId) {
-    await chrome.storage.local.set({ currentProfileId: profileId });
-  },
-  
-  // デフォルトプロファイルを作成
-  async createDefaultProfile() {
-    const profileId = 'profile_' + Date.now();
-    await this.saveProfile(profileId, this.getDefaultData(), 'デフォルト');
-    await this.setCurrentProfileId(profileId);
-    return profileId;
-  },
-  
-  // 新規プロファイルを作成
-  async createNewProfile(name) {
-    const profiles = await this.getAllProfiles();
-    const profileCount = Object.keys(profiles).length;
-    
-    if (profileCount >= this.MAX_PROFILES) {
-      throw new Error(`最大${this.MAX_PROFILES}個までしか保存できません`);
-    }
-    
-    const profileId = 'profile_' + Date.now();
-    await this.saveProfile(profileId, this.getDefaultData(), name);
-    return profileId;
-  },
-  
-  // プロファイル名を変更
-  async renameProfile(profileId, newName) {
-    const profiles = await this.getAllProfiles();
-    if (profiles[profileId]) {
-      profiles[profileId].name = newName;
-      profiles[profileId].updatedAt = new Date().toISOString();
-      await chrome.storage.local.set({ profiles });
-    }
-  },
-  
   // デフォルトデータ
   getDefaultData() {
     return {
+      // 会社情報
+      companyName: '',
+      companyKana: '',
+      department: '',
+      position: '',
+      url: '',
+      
+      // 担当者情報
       lastName: '',
       firstName: '',
+      fullName: '',
       kanaLastName: '',
       kanaFirstName: '',
       kanaFullName: '',
-      katakanaFullName: '',
       katakanaLastName: '',
       katakanaFirstName: '',
-      fullName: '',
+      katakanaFullName: '',
+      
+      // 所在地
       zipcode: '',
       zipcode1: '',
-      zipcode2: '', 
+      zipcode2: '',
       fullAddress: '',
       prefecture: '',
       city: '',
       street: '',
       building: '',
+      
+      // 連絡先
       phone: '',
       phone1: '',
       phone2: '',
@@ -158,15 +39,70 @@ const Storage = {
       fax: '',
       email: '',
       emailConfirm: '',
+      
+      // 問い合わせ情報
       subject: '',
       message300: '',
-      message800: '',
-      companyName: '',
-      companyKana: '',
-      department: '',
-      position: '',
-      url: ''
+      message800: ''
     };
+  },
+
+  // 現在のアクティブな設定番号を取得 (1 or 2)
+  async getCurrentSetting() {
+    const result = await chrome.storage.local.get('currentSetting');
+    return result.currentSetting || 1;
+  },
+
+  // 現在のアクティブな設定番号を設定
+  async setCurrentSetting(settingNumber) {
+    if (settingNumber !== 1 && settingNumber !== 2) {
+      throw new Error('設定番号は1または2である必要があります');
+    }
+    await chrome.storage.local.set({ currentSetting: settingNumber });
+  },
+
+  // 設定データを読み込み
+  async load(settingNumber = null) {
+    if (settingNumber === null) {
+      settingNumber = await this.getCurrentSetting();
+    }
+    
+    const key = `setting${settingNumber}`;
+    const result = await chrome.storage.local.get(key);
+    
+    if (result[key]) {
+      return result[key];
+    } else {
+      return this.getDefaultData();
+    }
+  },
+
+  // 設定データを保存
+  async save(data, settingNumber = null) {
+    if (settingNumber === null) {
+      settingNumber = await this.getCurrentSetting();
+    }
+    
+    const key = `setting${settingNumber}`;
+    await chrome.storage.local.set({ [key]: data });
+  },
+
+  // 両方の設定を取得
+  async loadBothSettings() {
+    const result = await chrome.storage.local.get(['setting1', 'setting2']);
+    return {
+      setting1: result.setting1 || this.getDefaultData(),
+      setting2: result.setting2 || this.getDefaultData()
+    };
+  },
+
+  // 設定をリセット
+  async reset(settingNumber = null) {
+    if (settingNumber === null) {
+      settingNumber = await this.getCurrentSetting();
+    }
+    
+    const key = `setting${settingNumber}`;
+    await chrome.storage.local.set({ [key]: this.getDefaultData() });
   }
 };
-
